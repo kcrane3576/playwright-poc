@@ -39,8 +39,14 @@ ENV NODE_ENV=production \
 # Install ONLY OS libs for Chromium+Firefox (no webkit deps)
 RUN set -eux; \
     apt-get update; \
-    apt-get install -y --no-install-recommends ca-certificates curl gnupg fontconfig; \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        gnupg \
+        fontconfig; \
+    # Install system libs Playwright expects for Chromium/Firefox
     npx -y playwright@${PW_VERSION} install-deps chromium firefox; \
+    # Remove install-only tools
     apt-get purge -y --auto-remove curl gnupg; \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
@@ -57,7 +63,6 @@ WORKDIR /app
 COPY --from=deps    --chown=1001:1001 /app/node_modules /app/node_modules
 COPY                 --chown=1001:1001 entrypoint.js /app/entrypoint.js
 
-# Trim obvious bulk safely (docs/man/locales)
 RUN rm -rf /usr/share/doc/* /usr/share/man/* \
  && find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en*' -exec rm -rf {} +
 

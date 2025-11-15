@@ -1,4 +1,4 @@
-IMAGE_NAME := playwright-npm-setup-2.2
+IMAGE_NAME := playwright-npm-setup-2.3
 TAG := 1.54
 
 # These targets are actions, not files

@@ -12,7 +12,7 @@ RUN npm init -y \
  && npm cache clean --force
 
 # Download Chromium + Firefox browser binaries into /ms-playwright + trim unneeded parts
- RUN set -eux; \
+RUN set -eux; \
     npx playwright@${PW_VERSION} install chromium firefox; \
     # Didn't install WebKit, but this is safe / future-proof:
     rm -rf /ms-playwright/webkit-* || true; \

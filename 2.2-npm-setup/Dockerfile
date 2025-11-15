@@ -11,9 +11,17 @@ RUN npm init -y \
  && npm install --omit=dev --no-audit --no-fund playwright-core@${PW_VERSION} \
  && npm cache clean --force
 
-# Download Chromium + Firefox browser binaries into /ms-playwright
-RUN npx playwright@${PW_VERSION} install chromium firefox \
- && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+# Download Chromium + Firefox browser binaries into /ms-playwright + trim unneeded parts
+ RUN set -eux; \
+    npx playwright@${PW_VERSION} install chromium firefox; \
+    # Didn't install WebKit, but this is safe / future-proof:
+    rm -rf /ms-playwright/webkit-* || true; \
+    # (optional) trim crashpad tools, symbols, minidumps to save extra space
+    find /ms-playwright -type f -name '*.sym' -delete || true; \
+    find /ms-playwright -type f -name 'minidump_stackwalk*' -delete || true; \
+    find /ms-playwright -type d -name 'crashpad' -prune -exec rm -rf {} + || true; \
+    # Clean apt caches if anything was pulled in under the hood
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # ---------- Stage 2: Ubuntu 24.04 runtime ----------
 FROM ubuntu:24.04
@@ -44,7 +52,7 @@ RUN set -eux; \
     # Install system libs Playwright expects for Chromium/Firefox
     npx -y playwright@${PW_VERSION} install-deps chromium firefox; \
     # Remove install-only tools
-    apt-get purge -y --auto-remove curl gnupg; \
+    apt-get purge -y --auto-remove npm curl gnupg; \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 ENV TMPDIR=/dev/shm

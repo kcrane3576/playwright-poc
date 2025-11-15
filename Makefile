@@ -10,4 +10,7 @@ build:
 run:
 	docker run --rm --shm-size=1g -e TMPDIR=/dev/shm $(IMAGE_NAME):$(TAG)
 
+flush:
+	docker system prune -a -f
+
 up: build run

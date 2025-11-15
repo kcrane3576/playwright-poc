@@ -1,5 +1,5 @@
 # ---------- Stage 1: Node deps + browser download ----------
-FROM node:20-bookworm-slim AS deps
+FROM node:22-bookworm-slim AS deps
 ARG PW_VERSION=1.54
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
     CI=1

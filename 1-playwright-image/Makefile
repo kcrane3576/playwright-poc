@@ -1,4 +1,4 @@
-IMAGE_NAME := slim-playwright
+IMAGE_NAME := playwright-ms-base
 TAG := 1.54
 
 # These targets are actions, not files

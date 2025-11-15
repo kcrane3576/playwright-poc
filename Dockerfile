@@ -39,11 +39,10 @@ ENV NODE_ENV=production \
 # Install ONLY OS libs for Chromium+Firefox (no webkit deps)
 RUN set -eux; \
     apt-get update; \
-    apt-get install -y --no-install-recommends ca-certificates curl gnupg; \
+    apt-get install -y --no-install-recommends ca-certificates curl gnupg fontconfig; \
     npx -y playwright@${PW_VERSION} install-deps chromium firefox; \
     apt-get purge -y --auto-remove curl gnupg; \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
-    apt-get update && apt-get install -y --no-install-recommends fontconfig && rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 ENV TMPDIR=/dev/shm
 # Create the app user BEFORE copying, then set ownership at copy time
